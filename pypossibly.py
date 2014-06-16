@@ -123,20 +123,209 @@ class Something(Maybe):
 
     def __str__(self):
         return str(self.__value)
+        
+    def __int__(self):
+        return int(self.__value)
+        
+    def __long__(self):
+        return long(self.__value)
+    
+    def __float__(self):
+        return float(self.__value)
+    
+    def __complex__(self):
+        return complex(self.__value)
+    
+    def __oct__(self):
+        return oct(self.__value)
+        
+    def __hex__(self):
+        return hex(self.__value)
+        
+    def __index__(self):
+        return index(self.__value)
+        
+    def __trunc__(self):
+        return trunc(self.__value)
+        
+    def __coerce__(self, other):
+        return coerce(self.__value, other)
 
     def __unicode__(self):
         return unicode(self.__value)
 
     def __nonzero__(self):
         return True
-
+        
     def __dir__(self):
         return dir(self.__value)
 
     def __sizeof__(self):
         return sizeof(self.__value)
-
     #endregion
+    
+    #region Arithmetics
+    def __add__(self, other):
+        return maybe(self.__value+other)
+
+    def __sub__(self, other):
+        return maybe(self.__value-other)
+        
+    def __mul__(self, other):
+        return maybe(self.__value * other)
+        
+    def __floordiv__(self, other):
+        return maybe(self.__value // other)
+
+    def __div__(self, other):
+        return maybe(self.__value / other)
+
+    def __mod__(self, other):
+        return maybe(self.__value % other)
+
+    def __divmod__(self, other):
+        """Implements behavior for long division using the divmod() built in function."""
+        return maybe(divmod(self.__value, other))
+
+    def __pow__(self, other):
+        """Implements behavior for exponents using the ** operator."""
+        return maybe(self.__value ** other)
+        
+    def __lshift__(self, other):
+        """Implements left bitwise shift using the << operator."""
+        return maybe(self.__value << other)
+    def __rshift__(self, other):
+        """Implements right bitwise shift using the >> operator."""
+        return maybe(self.__value >> other)
+        
+    def __and__(self, other):
+        """Implements bitwise and using the & operator."""
+        return maybe(self.__value & other)
+        
+    def __or__(self, other):
+        """Implements bitwise or using the | operator."""
+        return maybe(self.__value | other)
+
+    def __xor__(self, other):
+        """Implements bitwise xor using the ^ operator."""
+        return maybe(self.__value ^ other)
+
+    def __radd__(self, other):
+        """Implements reflected addition."""
+        return maybe(other + self.__value)
+        
+    def __rsub__(self, other):
+        """Implements reflected subtraction."""
+        return maybe(other - self.__value)
+
+    def __rmul__(self, other):
+        """Implements reflected multiplication."""
+        return maybe(other * self.__value)
+        
+    def __rfloordiv__(self, other):
+        """Implements reflected integer division using the // operator."""
+        return maybe(other // self.__value)
+
+    def __rdiv__(self, other):
+        """Implements reflected division using the / operator."""
+        return maybe(other / self.__value)
+        
+    def __rmod__(self, other):
+        """Implements reflected modulo using the % operator."""
+        return maybe(other % self.__value)
+
+    def __rdivmod__(self, other):
+        """Implements behavior for long division using the divmod() built in function, when divmod(other, self) is called."""
+        return maybe(divmod(other, self.__value))
+        
+    def __rpow__(self, other):
+        """Implements behavior for reflected exponents using the ** operator."""
+        return maybe(other ** self.__value)
+
+    def __rlshift__(self, other):
+        """Implements reflected left bitwise shift using the << operator."""
+        return maybe(other << self.__value)
+
+    def __rrshift__(self, other):
+        """Implements reflected right bitwise shift using the >> operator."""
+        return maybe(other >> self.__value)
+        
+    def __rand__(self, other):
+        """Implements reflected bitwise and using the & operator."""
+        return maybe(other & self.__value)
+
+    def __ror__(self, other):
+        """Implements reflected bitwise or using the | operator."""
+        return maybe(other | self.__value)
+        
+    def __rxor__(self, other):
+        """Implements reflected bitwise xor using the ^ operator."""
+        return maybe(other ^ self.__value)
+    #endregion
+    
+    #region Augmented assignment
+    def __iadd__(self, other):
+        """Implements addition with assignment."""
+        self.__value += other
+        return self
+        
+    def __isub__(self, other):
+        """Implements subtraction with assignment."""
+        self.__value -= other
+        return self
+        
+    def __imul__(self, other):
+        """Implements multiplication with assignment."""
+        self.__value *= other
+        return self
+        
+    def __ifloordiv__(self, other):
+        """Implements integer division with assignment using the //= operator."""
+        self.__value //= other
+        return self
+        
+    def __idiv__(self, other):
+        """Implements division with assignment using the /= operator."""
+        self.__value /= other
+        return self
+        
+    def __imod__(self, other):
+        """Implements modulo with assignment using the %= operator."""
+        self.__value %= other
+        return self
+        
+    def __ipow__(self, other):
+        """Implements behavior for exponents with assignment using the **= operator."""
+        self.__value **= other
+        return self
+        
+    def __ilshift__(self, other):
+        """Implements left bitwise shift with assignment using the <<= operator."""
+        self.__value <<= other
+        return self
+        
+    def __irshift__(self, other):
+        """Implements right bitwise shift with assignment using the >>= operator."""
+        self.__value >>= other
+        return self
+        
+    def __iand__(self, other):
+        """Implements bitwise and with assignment using the &= operator."""
+        self.__value &= other
+        return self
+        
+    def __ior__(self, other):
+        """Implements bitwise or with assignment using the |= operator."""
+        self.__value |= other
+        return self
+        
+    def __ixor__(self, other):
+        """Implements bitwise xor with assignment using the ^= operator."""
+        self.__value ^= other
+        return self
+        
+    #endregion
+    
 
 def maybe(value):
     """Wraps an object with a Maybe instance.
@@ -173,7 +362,7 @@ def maybe(value):
 
         >>> maybe(None).or_else(lambda: "value")
         'value'
-
+        
         >>> maybe(None).or_else("value")
         'value'
 
@@ -191,7 +380,14 @@ def maybe(value):
         None
         >>> eran.phone_number.or_else('no phone number')
         'no phone number'
-
+        
+        >>> maybe(4) + 8
+        12
+        >>> maybe(4) - 2
+        2
+        >>> maybe(4) * 2
+        8
+        
       Enabled easily using NestedDictionaries without having to worry
       if a value is missing.
       For example lets assume we want to load some value from the
