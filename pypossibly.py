@@ -1,5 +1,4 @@
-import logging
-import sys
+from sys import getsizeof
 
 class Maybe(object):
     pass
@@ -15,14 +14,14 @@ class Nothing(Maybe):
     def get(self):
         raise Exception('No such element')
 
-    def or_else(self, els = None):
+    def or_else(self, els=None):
         if callable(els):
             return els()
 
         return els
 
-    def __cmp__(self):
-        if (other.__class__ == Nothing):
+    def __cmp__(self, other):
+        if other.__class__ == Nothing:
             return 0
 
         return 1
@@ -78,13 +77,14 @@ class Something(Maybe):
     def get(self):
         return self.__value
 
-    def or_else(self, els = None):
+    #pylint: disable=W0613
+    def or_else(self, els=None):
         return self.__value
 
     def __iter__(self):
         try:
             iterator = iter(self.value)
-        except TypeError, te:
+        except TypeError:
             iterator = iter([self.value])
 
         return iterator
@@ -92,11 +92,11 @@ class Something(Maybe):
     def __getattr__(self, name):
         try:
             return maybe(getattr(self.__value, name))
-        except:
+        except Exception:
             return Nothing()
 
     def __setattr__(self, name, v):
-        if (name == "_Something__value"):
+        if name == "_Something__value":
             return super(Something, self).__setattr__(name, v)
 
         return setattr(self.__value, name, v)
@@ -123,31 +123,31 @@ class Something(Maybe):
 
     def __str__(self):
         return str(self.__value)
-        
+
     def __int__(self):
         return int(self.__value)
-        
+
     def __long__(self):
         return long(self.__value)
-    
+
     def __float__(self):
         return float(self.__value)
-    
+
     def __complex__(self):
         return complex(self.__value)
-    
+
     def __oct__(self):
         return oct(self.__value)
-        
+
     def __hex__(self):
         return hex(self.__value)
-        
+
     def __index__(self):
-        return index(self.__value)
-        
+        return self.__value.__index__()
+
     def __trunc__(self):
-        return trunc(self.__value)
-        
+        return self.__value.__trunc__()
+
     def __coerce__(self, other):
         return coerce(self.__value, other)
 
@@ -156,24 +156,24 @@ class Something(Maybe):
 
     def __nonzero__(self):
         return True
-        
+
     def __dir__(self):
         return dir(self.__value)
 
     def __sizeof__(self):
-        return sizeof(self.__value)
+        return getsizeof(self.__value)
     #endregion
-    
+
     #region Arithmetics
     def __add__(self, other):
         return maybe(self.__value+other)
 
     def __sub__(self, other):
         return maybe(self.__value-other)
-        
+
     def __mul__(self, other):
         return maybe(self.__value * other)
-        
+
     def __floordiv__(self, other):
         return maybe(self.__value // other)
 
@@ -190,18 +190,19 @@ class Something(Maybe):
     def __pow__(self, other):
         """Implements behavior for exponents using the ** operator."""
         return maybe(self.__value ** other)
-        
+
     def __lshift__(self, other):
         """Implements left bitwise shift using the << operator."""
         return maybe(self.__value << other)
+
     def __rshift__(self, other):
         """Implements right bitwise shift using the >> operator."""
         return maybe(self.__value >> other)
-        
+
     def __and__(self, other):
         """Implements bitwise and using the & operator."""
         return maybe(self.__value & other)
-        
+
     def __or__(self, other):
         """Implements bitwise or using the | operator."""
         return maybe(self.__value | other)
@@ -213,7 +214,7 @@ class Something(Maybe):
     def __radd__(self, other):
         """Implements reflected addition."""
         return maybe(other + self.__value)
-        
+
     def __rsub__(self, other):
         """Implements reflected subtraction."""
         return maybe(other - self.__value)
@@ -221,7 +222,7 @@ class Something(Maybe):
     def __rmul__(self, other):
         """Implements reflected multiplication."""
         return maybe(other * self.__value)
-        
+
     def __rfloordiv__(self, other):
         """Implements reflected integer division using the // operator."""
         return maybe(other // self.__value)
@@ -229,7 +230,7 @@ class Something(Maybe):
     def __rdiv__(self, other):
         """Implements reflected division using the / operator."""
         return maybe(other / self.__value)
-        
+
     def __rmod__(self, other):
         """Implements reflected modulo using the % operator."""
         return maybe(other % self.__value)
@@ -237,7 +238,7 @@ class Something(Maybe):
     def __rdivmod__(self, other):
         """Implements behavior for long division using the divmod() built in function, when divmod(other, self) is called."""
         return maybe(divmod(other, self.__value))
-        
+
     def __rpow__(self, other):
         """Implements behavior for reflected exponents using the ** operator."""
         return maybe(other ** self.__value)
@@ -249,7 +250,7 @@ class Something(Maybe):
     def __rrshift__(self, other):
         """Implements reflected right bitwise shift using the >> operator."""
         return maybe(other >> self.__value)
-        
+
     def __rand__(self, other):
         """Implements reflected bitwise and using the & operator."""
         return maybe(other & self.__value)
@@ -257,75 +258,74 @@ class Something(Maybe):
     def __ror__(self, other):
         """Implements reflected bitwise or using the | operator."""
         return maybe(other | self.__value)
-        
+
     def __rxor__(self, other):
         """Implements reflected bitwise xor using the ^ operator."""
         return maybe(other ^ self.__value)
     #endregion
-    
+
     #region Augmented assignment
     def __iadd__(self, other):
         """Implements addition with assignment."""
         self.__value += other
         return self
-        
+
     def __isub__(self, other):
         """Implements subtraction with assignment."""
         self.__value -= other
         return self
-        
+
     def __imul__(self, other):
         """Implements multiplication with assignment."""
         self.__value *= other
         return self
-        
+
     def __ifloordiv__(self, other):
         """Implements integer division with assignment using the //= operator."""
         self.__value //= other
         return self
-        
+
     def __idiv__(self, other):
         """Implements division with assignment using the /= operator."""
         self.__value /= other
         return self
-        
+
     def __imod__(self, other):
         """Implements modulo with assignment using the %= operator."""
         self.__value %= other
         return self
-        
+
     def __ipow__(self, other):
         """Implements behavior for exponents with assignment using the **= operator."""
         self.__value **= other
         return self
-        
+
     def __ilshift__(self, other):
         """Implements left bitwise shift with assignment using the <<= operator."""
         self.__value <<= other
         return self
-        
+
     def __irshift__(self, other):
         """Implements right bitwise shift with assignment using the >>= operator."""
         self.__value >>= other
         return self
-        
+
     def __iand__(self, other):
         """Implements bitwise and with assignment using the &= operator."""
         self.__value &= other
         return self
-        
+
     def __ior__(self, other):
         """Implements bitwise or with assignment using the |= operator."""
         self.__value |= other
         return self
-        
+
     def __ixor__(self, other):
         """Implements bitwise xor with assignment using the ^= operator."""
         self.__value ^= other
         return self
-        
+
     #endregion
-    
 
 def maybe(value):
     """Wraps an object with a Maybe instance.
@@ -362,15 +362,15 @@ def maybe(value):
 
         >>> maybe(None).or_else(lambda: "value")
         'value'
-        
+
         >>> maybe(None).or_else("value")
         'value'
 
       Wrap around values from object's attributes:
 
         class Person(object):
-          def __init__(name):
-            self.eran = name
+            def __init__(name):
+                self.eran = name
 
         eran = maybe(Person('eran'))
 
@@ -380,25 +380,25 @@ def maybe(value):
         None
         >>> eran.phone_number.or_else('no phone number')
         'no phone number'
-        
+
         >>> maybe(4) + 8
         12
         >>> maybe(4) - 2
         2
         >>> maybe(4) * 2
         8
-        
+
       Enabled easily using NestedDictionaries without having to worry
       if a value is missing.
       For example lets assume we want to load some value from the
       following dictionary:
         nested_dict = maybe({
-          'store': {
-            'name': 'MyStore',
-            'departments': {
-                'sales': { 'head_count': '10' }
+            'store': {
+                'name': 'MyStore',
+                    'departments': {
+                    'sales': { 'head_count': '10' }
+                }
             }
-          }
         })
 
         >>> nested_dict['store']['name']
@@ -415,7 +415,7 @@ def maybe(value):
     """
     if isinstance(value, Maybe):
         return value
-    
+
     if value:
         return Something(value)
 
@@ -425,22 +425,23 @@ if __name__ == "__main__":
     import doctest
 
     class Person(object):
-      def __init__(self, name):
-        self.name = name
+        def __init__(self, name):
+            self.name = name
 
     eran = Person('eran')
 
     globals_dict = {
-      'nested_dict': maybe({
-        'store': {
-          'name': 'MyStore',
-          'departments': {
-              'sales': { 'head_count': '10' }
-          }
-        }
-      }),
-      'eran' : maybe(eran),
-      'maybe': maybe
+        'nested_dict': maybe({
+            'store': {
+                'name': 'MyStore',
+                'departments': {
+                    'sales': {'head_count': '10'}
+                }
+            }
+        }),
+        'eran' : maybe(eran),
+        'maybe': maybe
     }
 
     doctest.testmod(globs=globals_dict)
+
