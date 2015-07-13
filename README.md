@@ -1,4 +1,2 @@
-pypossibly
-==========
-
-Optional pattern (Maybe monad) in python
+DEPRECATED
+Please refer to the new repository at https://github.com/ekampf/pymaybe
